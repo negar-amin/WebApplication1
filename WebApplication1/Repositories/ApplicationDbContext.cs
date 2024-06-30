@@ -8,4 +8,13 @@ public class ApplicationDbContext : DbContext
 	}
 
 	public DbSet<Product> Products { get; set; }
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		base.OnModelCreating(modelBuilder);
+
+		modelBuilder.Entity<Product>(entity =>
+		{
+			entity.Property(e => e.Price).HasPrecision(18, 2);
+		});
+	}
 }
