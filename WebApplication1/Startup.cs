@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.OpenApi.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using WebApplication1.Services;
+using WebApplication1.GraphQL.Mutation;
+using WebApplication1.Data.Models;
+using WebApplication1.GraphQL.Query;
+using WebApplication1.Repositories;
 
 public class Startup
 {
@@ -19,15 +24,28 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection services)
 	{
+		//services.AddDbContext<ApplicationDbContext>(options =>
+		//	options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+			options.UseMySql(Configuration.GetConnectionString("MySQL"), new MySqlServerVersion(new Version(8, 0, 23)))
+);
 
 		services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+		services.AddScoped<IOrderCustomerService, OrderCustomerService>();
+		services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
 		services.AddScoped<IProductService, ProductService>();
+		services.AddScoped<IUserService, UserService>();
+		services.AddScoped<IOrderService, OrderService>();
 		services
 			.AddGraphQLServer()
-			.AddQueryType<Query>()
-			.AddType<ProductType>()
+			.AddQueryType(d => d.Name("Query"))
+				.AddTypeExtension<ProductQuery>()
+				.AddTypeExtension<UserQuery>()
+				.AddTypeExtension<OrderQuery>()
+			.AddMutationType(d=> d.Name("Mutation"))
+				.AddTypeExtension<ProductMutation>()
+				.AddTypeExtension<UserMutation>()
+				.AddTypeExtension<OrderMutation>()
 			.AddProjections();
 
 	}
