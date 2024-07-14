@@ -1,4 +1,5 @@
-﻿using WebApplication1.Data.Models;
+﻿using WebApplication1.Data.DTO;
+using WebApplication1.Data.Models;
 
 namespace WebApplication1.Services
 {
@@ -8,7 +9,7 @@ namespace WebApplication1.Services
 		Task<Order> GetOrderByIdAsync(int id);
 		Task UpdateOrderAsync(Order order);
 		Task DeleteOrderAsync(int id);
-		Task<Order> AddOrderAsync(int userId, int productId);
+		Task<Order> AddOrderAsync(int userId, List<AddOrderDTO> productsInfo);
 
 	}
 }

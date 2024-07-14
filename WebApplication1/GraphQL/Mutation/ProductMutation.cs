@@ -13,7 +13,7 @@ namespace WebApplication1.GraphQL.Mutation
 				Name = input.Name,
 				Description = input.Description,
 				Price = input.Price,
-				StockNumber = input.StockNumber
+				StockQuantity = input.StockNumber
 			};
 			await ProductService.AddProductAsync(product);
 			return product;
@@ -28,9 +28,22 @@ namespace WebApplication1.GraphQL.Mutation
 			product.Name = input.Name == null ? product.Name : input.Name;
 			product.Description = input.Description == null ? product.Description : input.Description;
 			product.Price = (decimal)(input.Price == null ? product.Price : input.Price);
-			product.StockNumber = (int)(input.StockNumber == null ? product.StockNumber : input.StockNumber);
+			product.StockQuantity = (int)(input.StockNumber == null ? product.StockQuantity : input.StockNumber);
 			await ProductService.UpdateProductAsync(product);
 			return product;
+		}
+		public async Task<bool> AddToStock(int productId, int productCount, [Service] IProductService productService)
+		{
+			Product product = await productService.GetProductByIdAsync(productId);
+			if (product == null) {
+				throw new Exception("product doesn't exist");
+			}
+			else
+			{
+				product.StockQuantity = product.StockQuantity + productCount;
+				await productService.UpdateProductAsync(product);
+				return true;
+			}
 		}
 		public async Task<bool> DeleteProduct(int id, [Service] IProductService ProductService)
 		{

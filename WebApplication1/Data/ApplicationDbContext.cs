@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using WebApplication1.Data.Configurations;
 using WebApplication1.Data.Models;
 
 public class ApplicationDbContext : DbContext
@@ -14,11 +16,8 @@ public class ApplicationDbContext : DbContext
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
-		base.OnModelCreating(modelBuilder);
-
-		modelBuilder.Entity<Product>(entity =>
-		{
-			entity.Property(e => e.Price).HasPrecision(18, 2);
-		});
+		modelBuilder.ApplyConfiguration(new ProductConfiguration());
+		modelBuilder.ApplyConfiguration(new OrderCofiguration());
 	}
+
 }

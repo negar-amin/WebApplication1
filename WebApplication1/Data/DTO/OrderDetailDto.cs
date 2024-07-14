@@ -4,8 +4,8 @@ namespace WebApplication1.Data.DTO
 {
 	public class OrderDetailDto
 	{
-		public Product Product { get; set; }
-		public string Name { get; set; }
+		public ICollection<Product> ProductCollection { get; set; }
+		public string BuyerName { get; set; }
 		public DateTime PurchaseTime { get; set; }
 	}
 }

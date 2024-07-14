@@ -12,7 +12,7 @@ namespace WebApplication1.GraphQL.Mutation
 		{
 			var user = new User
 			{
-				Name = input.Name,
+				FirstName = input.Name,
 				LastName = input.LastName,
 				Role = input.Role,
 			};
@@ -26,7 +26,7 @@ namespace WebApplication1.GraphQL.Mutation
 			{
 				throw new Exception("User not found");
 			}
-			user.Name = input.Name == null? user.Name : input.Name;
+			user.FirstName = input.Name == null? user.FirstName : input.Name;
 			user.LastName = input.LastName == null? user.LastName : input.LastName;
 			user.Role = (Role)(input.Role == null ? user.Role : input.Role);
 			await UserService.UpdateUserAsync(user);

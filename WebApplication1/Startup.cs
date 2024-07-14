@@ -36,6 +36,8 @@ public class Startup
 		services.AddScoped<IProductService, ProductService>();
 		services.AddScoped<IUserService, UserService>();
 		services.AddScoped<IOrderService, OrderService>();
+		services.AddScoped(typeof(IJoinTableRepository<>), typeof(JoinTableRepository<>));
+		services.AddScoped<IProductOrderService, ProductOrderService>();
 		services
 			.AddGraphQLServer()
 			.AddQueryType(d => d.Name("Query"))

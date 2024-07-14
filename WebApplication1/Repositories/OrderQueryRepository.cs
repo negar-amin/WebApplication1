@@ -18,12 +18,13 @@ namespace WebApplication1.Repositories
 			var query = from order in _context.Orders
 						join customer in _context.Users
 						on order.User.Id equals customer.Id
-						where order.PurchaseTime == date
+						where order.PurchaseTime.Date == date.Date
 						select new
 						{
-							order.Product,
+							order.Products,
 							order.PurchaseTime,
-							customer.Name,
+							customer.FirstName,
+							customer.LastName
 						}
 						;
 			var result = query.ToList();
@@ -32,9 +33,9 @@ namespace WebApplication1.Repositories
 			{
 				var row = new OrderDetailDto
 				{
-					Product = item.Product,
+					ProductCollection = item.Products,
 					PurchaseTime = item.PurchaseTime,
-					Name = item.Name
+					BuyerName = $"{item.FirstName} {item.LastName}"
 				};
 				parsedResult.Add(row);
 			}
