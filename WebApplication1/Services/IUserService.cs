@@ -9,5 +9,6 @@ namespace WebApplication1.Services
 		Task AddUserAsync(User user);
 		Task DeleteUserAsync(int id);
 		Task UpdateUserAsync(User user);
+		Task<bool> AddDefaultValueToRole();
 	}
 }

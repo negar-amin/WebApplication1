@@ -9,7 +9,7 @@ namespace WebApplication1.Services
 		Task<Order> GetOrderByIdAsync(int id);
 		Task UpdateOrderAsync(Order order);
 		Task DeleteOrderAsync(int id);
-		Task<Order> AddOrderAsync(int userId, List<AddOrderDTO> productsInfo);
+		Task<Order> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo);
 
 	}
 }

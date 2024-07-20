@@ -4,6 +4,6 @@ namespace WebApplication1.Repositories
 {
 	public interface IOrderQueryRepository
 	{
-		List<OrderDetailDto> GetOrderWithCustomer(DateTime date);
+		List<CustomerOrderDetailDTO> GetOrderWithCustomer(DateTime date);
 	}
 }

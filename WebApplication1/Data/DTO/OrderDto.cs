@@ -2,17 +2,16 @@
 
 namespace WebApplication1.Data.DTO
 {
-	public class UpdateOrderDto
+	public class UpdateOrderDTO
 	{
 		public int? Id { get; set; }
 		public User? User { get; set; }
 		public Product? Product { get; set; }
 		public DateTime? PurchaseTime { get; set; }
 	}
-	public class AddOrderDto
+	public class AddOrderRequestDTO
 	{
-		public User User { get; set; }
-		public Product Product { get; set; }
-		public DateTime PurchaseTime { get; set; }
+		public int ProductId { get; set; }
+		public int ProductCount { get; set; }
 	}
 }

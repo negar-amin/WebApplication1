@@ -4,6 +4,6 @@ namespace WebApplication1.Services
 {
 	public interface IOrderCustomerService
 	{
-		public List<OrderDetailDto> GetCustomerOrdersByDate(DateTime date);
+		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date);
 	}
 }

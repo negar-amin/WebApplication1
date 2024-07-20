@@ -34,5 +34,15 @@ namespace WebApplication1.Services
 		{
 			await _userRepository.UpdateAsync(user);
 		}
+		public async Task<bool> AddDefaultValueToRole()
+		{
+			var users = await _userRepository.GetAllAsync();
+            foreach (var user in users)
+            {
+				user.Role = user.Role + 1;
+				await _userRepository.UpdateAsync(user);
+            }
+			return true;
+        }
 	}
 }

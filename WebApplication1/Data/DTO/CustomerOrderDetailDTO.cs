@@ -2,7 +2,7 @@
 
 namespace WebApplication1.Data.DTO
 {
-	public class OrderDetailDto
+	public class CustomerOrderDetailDTO
 	{
 		public ICollection<Product> ProductCollection { get; set; }
 		public string BuyerName { get; set; }

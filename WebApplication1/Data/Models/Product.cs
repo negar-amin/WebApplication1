@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.Data.Models
+﻿using System.Reflection;
+
+namespace WebApplication1.Data.Models
 {
 	public class Product
 	{

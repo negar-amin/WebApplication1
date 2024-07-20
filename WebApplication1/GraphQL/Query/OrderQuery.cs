@@ -16,7 +16,7 @@ namespace WebApplication1.GraphQL.Query
 		{
 			return await orderService.GetOrderByIdAsync(id);
 		}
-		public List<OrderDetailDto> GetCustomerOrdersByDate(string date, [Service] IOrderCustomerService orderCustomerService)
+		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(string date, [Service] IOrderCustomerService orderCustomerService)
 		{
 			DateTime d = Convert.ToDateTime(date);
 			return orderCustomerService.GetCustomerOrdersByDate(d);

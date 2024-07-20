@@ -12,6 +12,7 @@ using WebApplication1.GraphQL.Mutation;
 using WebApplication1.Data.Models;
 using WebApplication1.GraphQL.Query;
 using WebApplication1.Repositories;
+using WebApplication1.Data.DTO.Mapster;
 
 public class Startup
 {
@@ -24,6 +25,7 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection services)
 	{
+		MapConfiguration.RegisterMapping();
 		//services.AddDbContext<ApplicationDbContext>(options =>
 		//	options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 		services.AddDbContext<ApplicationDbContext>(options =>

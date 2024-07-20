@@ -35,4 +35,18 @@ public class ProductService : IProductService
 	{
 		await _productRepository.DeleteAsync(id);
 	}
+
+	public async Task<bool> AddToStock(Product product, int count)
+	{
+		if (product == null)
+		{
+			throw new Exception("product doesn't exist");
+		}
+		else
+		{
+			product.StockQuantity = product.StockQuantity + count;
+			await UpdateProductAsync(product);
+		}
+		return true;
+	}
 }

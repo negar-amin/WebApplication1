@@ -1,18 +1,19 @@
-﻿namespace WebApplication1.Data.DTO
+﻿using WebApplication1.Data.Models;
+
+namespace WebApplication1.Data.DTO
 {
-	public class UpdateProductDTO
+	public class UpdateProductDTO: IMergeable<UpdateProductDTO>
 	{
-		public int? Id { get; set; }
 		public string? Name { get; set; }
 		public string? Description { get; set; }
 		public decimal? Price { get; set; }
-		public int? StockNumber { get; set; }
+		public int? StockQuantity { get; set; }
 	}
 	public class AddProductDTO
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public decimal Price { get; set; }
-		public int StockNumber { get; set; }
+		public int StockQuantity { get; set; }
 	}
 }

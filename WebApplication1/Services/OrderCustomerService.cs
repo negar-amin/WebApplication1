@@ -13,7 +13,7 @@ namespace WebApplication1.Services
         {
             _orderRepository = orderQueryRepository;
         }
-        public List<OrderDetailDto> GetCustomerOrdersByDate(DateTime date)
+        public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date)
 		{
 			return _orderRepository.GetOrderWithCustomer(date);
 		}

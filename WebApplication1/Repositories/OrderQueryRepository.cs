@@ -13,7 +13,7 @@ namespace WebApplication1.Repositories
         {
             _context = context;
         }
-        public List<OrderDetailDto> GetOrderWithCustomer(DateTime date)
+        public List<CustomerOrderDetailDTO> GetOrderWithCustomer(DateTime date)
 		{
 			var query = from order in _context.Orders
 						join customer in _context.Users
@@ -28,10 +28,10 @@ namespace WebApplication1.Repositories
 						}
 						;
 			var result = query.ToList();
-			List<OrderDetailDto> parsedResult = new List<OrderDetailDto>();
+			List<CustomerOrderDetailDTO> parsedResult = new List<CustomerOrderDetailDTO>();
 			foreach (var item in result)
 			{
-				var row = new OrderDetailDto
+				var row = new CustomerOrderDetailDTO
 				{
 					ProductCollection = item.Products,
 					PurchaseTime = item.PurchaseTime,

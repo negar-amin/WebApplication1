@@ -2,6 +2,7 @@
 {
     public enum Role
     {
+        none,
         customer,
         staff,
         admin

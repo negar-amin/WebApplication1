@@ -1,4 +1,6 @@
-﻿using WebApplication1.Data.DTO;
+﻿using GreenDonut;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using WebApplication1.Data.DTO;
 using WebApplication1.Data.Models;
 
 namespace WebApplication1.Services
@@ -16,29 +18,49 @@ namespace WebApplication1.Services
 			_userService = userService;
 			_productOrderService = productOrderService;
         }
-        public async Task<Order> AddOrderAsync(int userId, List<AddOrderDTO> productsInfo)
-		{
-			var user = await _userService.GetUserByIdAsync(userId);
+		private async Task<ICollection<Product>> OrderIsPossible(List<AddOrderRequestDTO> productsInfo) {
 			ICollection<Product> products = new List<Product>();
-			if (user == null)
-			{
-				throw new Exception("user or product doesn't exist");
-			}
 			foreach (var productInfo in productsInfo)
-            {
+			{
 				var product = await _productService.GetProductByIdAsync(productInfo.ProductId);
 				if (productInfo.ProductCount < 1) throw new Exception("product count must be greater than 0");
 				if (product == null) throw new Exception($"product with id {productInfo.ProductId} doesn't exist");
 				if (product.StockQuantity < productInfo.ProductCount) throw new Exception($"stockQuantity wasn't enough.{product.StockQuantity} of {product.Name} is available at store");
 				products.Add(product);
 			}
-            
-            foreach (var productInfo in productsInfo)
-            {
+			return products;
+		}
+
+		private async void UpdateOrderProductsStockQuantity(List<AddOrderRequestDTO> productsInfo)
+		{
+			foreach (var productInfo in productsInfo)
+			{
 				var product = await _productService.GetProductByIdAsync(productInfo.ProductId);
-				product.StockQuantity = product.StockQuantity-productInfo.ProductCount;
+				product.StockQuantity = product.StockQuantity - productInfo.ProductCount;
 				_productService.UpdateProductAsync(product);
-            }
+			}
+		}
+
+		private async void AddProductCountOfOrderProductsToOrderProductTable(Order addedOrder, List<AddOrderRequestDTO> productsInfo)
+		{
+			foreach (var item in productsInfo)
+			{
+				OrderProduct orderProduct = await _productOrderService.GetProductOrderAsync(addedOrder.Id, item.ProductId);
+				orderProduct.ProductCount = item.ProductCount;
+				_productOrderService.UpdateProductOrder(orderProduct);
+			}
+		}
+
+
+        public async Task<Order> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo)
+		{
+			var user = await _userService.GetUserByIdAsync(userId);
+			if (user == null)
+			{
+				throw new Exception("user doesn't exist");
+			}
+			ICollection<Product> products = await OrderIsPossible(productsInfo);
+			UpdateOrderProductsStockQuantity(productsInfo);
             Order order = new Order
 			{
 				User = user,
@@ -46,13 +68,7 @@ namespace WebApplication1.Services
 				PurchaseTime = DateTime.Now
 			};
 			var result = await _ordersRepository.AddAsync(order);
-            foreach (var item in productsInfo)
-            {
-				Console.WriteLine(item);
-				OrderProduct orderProduct = await _productOrderService.GetProductOrderAsync(result.Id, item.ProductId);
-				orderProduct.ProductCount = item.ProductCount;
-				_productOrderService.UpdateProductOrder(orderProduct);
-            }
+			AddProductCountOfOrderProductsToOrderProductTable(result, productsInfo);
             return order;
 		}
 

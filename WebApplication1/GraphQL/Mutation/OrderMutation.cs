@@ -7,7 +7,7 @@ namespace WebApplication1.GraphQL.Mutation
 	[ExtendObjectType(Name = "Mutation")]
 	public class OrderMutation
 	{
-		public async Task<Order> AddOrder(int userId, List<AddOrderDTO> productsInfo,[Service] IOrderService OrderService)
+		public async Task<Order> AddOrder(int userId, List<AddOrderRequestDTO> productsInfo,[Service] IOrderService OrderService)
 		{
 			var order = await OrderService.AddOrderAsync(userId,productsInfo);
 			return order;

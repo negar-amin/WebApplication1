@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Data.Models
 {
-    public class Order
+    public class Order 
     {
         public int Id { get; set; }
 		public int UserId { get; set; }
