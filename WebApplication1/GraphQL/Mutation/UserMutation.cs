@@ -11,8 +11,7 @@ namespace WebApplication1.GraphQL.Mutation
 	{
 		public async Task<User> AddUser(AddUserDTO input, [Service] IUserService UserService)
 		{
-			User user = input.Adapt<User>();
-			await UserService.AddUserAsync(user);
+			var user = await UserService.AddUserAsync(input);
 			return user;
 		}
 		public async Task<User> UpdateUser(int id, UpdateUserDTO input, [Service] IUserService UserService)

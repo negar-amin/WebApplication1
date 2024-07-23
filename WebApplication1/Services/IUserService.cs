@@ -1,4 +1,5 @@
-﻿using WebApplication1.Data.Models;
+﻿using WebApplication1.Data.DTO;
+using WebApplication1.Data.Models;
 
 namespace WebApplication1.Services
 {
@@ -6,9 +7,10 @@ namespace WebApplication1.Services
 	{
 		Task<IEnumerable<User>> GetAllUsersAsync();
 		Task<User> GetUserByIdAsync(int id);
-		Task AddUserAsync(User user);
+		Task<User> AddUserAsync(AddUserDTO user);
 		Task DeleteUserAsync(int id);
 		Task UpdateUserAsync(User user);
 		Task<bool> AddDefaultValueToRole();
+		Task<string> Login(string userName, string password);
 	}
 }

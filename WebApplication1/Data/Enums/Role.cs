@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Data.Models
+﻿namespace WebApplication1.Data.Enums
 {
     public enum Role
     {

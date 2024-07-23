@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext
 	{
 		modelBuilder.ApplyConfiguration(new ProductConfiguration());
 		modelBuilder.ApplyConfiguration(new OrderCofiguration());
+		modelBuilder.ApplyConfiguration(new UserConfiguration());
 	}
 
 }

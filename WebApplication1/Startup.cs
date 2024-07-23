@@ -13,6 +13,9 @@ using WebApplication1.Data.Models;
 using WebApplication1.GraphQL.Query;
 using WebApplication1.Repositories;
 using WebApplication1.Data.DTO.Mapster;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 public class Startup
 {
@@ -26,12 +29,30 @@ public class Startup
 	public void ConfigureServices(IServiceCollection services)
 	{
 		MapConfiguration.RegisterMapping();
+		//var key = Encoding.ASCII.GetBytes("my secret secret key");
+
+		//services.AddAuthentication(x =>
+		//{
+		//	x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+		//	x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+		//})
+		//.AddJwtBearer(x =>
+		//{
+		//	x.RequireHttpsMetadata = false;
+		//	x.SaveToken = true;
+		//	x.TokenValidationParameters = new TokenValidationParameters
+		//	{
+		//		ValidateIssuerSigningKey = true,
+		//		IssuerSigningKey = new SymmetricSecurityKey(key),
+		//		ValidateIssuer = false,
+		//		ValidateAudience = false
+		//	};
+		//});
 		//services.AddDbContext<ApplicationDbContext>(options =>
 		//	options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 		services.AddDbContext<ApplicationDbContext>(options =>
 			options.UseMySql(Configuration.GetConnectionString("MySQL"), new MySqlServerVersion(new Version(8, 0, 23)))
 );
-
 		services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 		services.AddScoped<IOrderCustomerService, OrderCustomerService>();
 		services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
@@ -40,13 +61,14 @@ public class Startup
 		services.AddScoped<IOrderService, OrderService>();
 		services.AddScoped(typeof(IJoinTableRepository<>), typeof(JoinTableRepository<>));
 		services.AddScoped<IProductOrderService, ProductOrderService>();
+		services.AddSingleton<TokenService>(ts => new TokenService(Configuration.GetSection("JwtSettings").GetValue<string>("SecretKey")));
 		services
 			.AddGraphQLServer()
 			.AddQueryType(d => d.Name("Query"))
 				.AddTypeExtension<ProductQuery>()
 				.AddTypeExtension<UserQuery>()
 				.AddTypeExtension<OrderQuery>()
-			.AddMutationType(d=> d.Name("Mutation"))
+			.AddMutationType(d => d.Name("Mutation"))
 				.AddTypeExtension<ProductMutation>()
 				.AddTypeExtension<UserMutation>()
 				.AddTypeExtension<OrderMutation>()

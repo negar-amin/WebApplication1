@@ -1,4 +1,5 @@
-﻿using WebApplication1.Data.DTO;
+﻿using HotChocolate.Authorization;
+using WebApplication1.Data.DTO;
 using WebApplication1.Data.Models;
 using WebApplication1.Services;
 
