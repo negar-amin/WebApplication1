@@ -3,10 +3,12 @@ using WebApplication1.Services;
 using WebApplication1.Data.DTO;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Mapster;
+using HotChocolate.Authorization;
 
 namespace WebApplication1.GraphQL.Mutation
 {
 	[ExtendObjectType(Name = "Mutation")]
+	[Authorize]
 	public class UserMutation
 	{
 		public async Task<User> AddUser(AddUserDTO input, [Service] IUserService UserService)
