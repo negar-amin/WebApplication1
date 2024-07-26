@@ -4,6 +4,9 @@ using WebApplication1.Data.DTO;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Mapster;
 using HotChocolate.Authorization;
+using WebApplication1.Data.Enums;
+using Microsoft.OpenApi.Extensions;
+using WebApplication1.Data.Enums;
 
 namespace WebApplication1.GraphQL.Mutation
 {
@@ -11,6 +14,7 @@ namespace WebApplication1.GraphQL.Mutation
 	[Authorize]
 	public class UserMutation
 	{
+		string admin = Role.customer.GetDisplayName();
 		public async Task<User> AddUser(AddUserDTO input, [Service] IUserService UserService)
 		{
 			var user = await UserService.AddUserAsync(input);

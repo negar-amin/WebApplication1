@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using WebApplication1.Data.Enums;
+using Microsoft.OpenApi.Extensions;
 
 public class Startup
 {
@@ -48,6 +50,12 @@ public class Startup
 				ValidateIssuer = false,
 				ValidateAudience = false
 			};
+		});
+		services.AddAuthorization(options =>
+		{
+			options.AddPolicy("admin access", policy => policy.RequireRole(Role.admin.GetDisplayName()));
+			options.AddPolicy("staff access", policy => policy.RequireRole(Role.staff.GetDisplayName()));
+			options.AddPolicy("customer access", policy => policy.RequireRole(Role.customer.GetDisplayName()));
 		});
 		//services.AddDbContext<ApplicationDbContext>(options =>
 		//	options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

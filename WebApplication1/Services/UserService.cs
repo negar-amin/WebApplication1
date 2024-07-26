@@ -94,7 +94,7 @@ namespace WebApplication1.Services
 			var passwordHash = HashPassword(password, user.PasswordSalt);
 			if (passwordHash != user.PasswordHash)
 				throw new Exception("Password is incorrect.");
-			return _tokenService.GenerateToken(userName);
+			return _tokenService.GenerateToken(user);
 		}
 	}
 }

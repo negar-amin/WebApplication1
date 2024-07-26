@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Data.Enums
 {
-    public enum Role
+    public enum Role:byte
     {
         none,
         customer,
