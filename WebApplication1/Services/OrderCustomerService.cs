@@ -15,7 +15,7 @@ namespace WebApplication1.Services
         }
         public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date)
 		{
-			return _orderRepository.GetOrderWithCustomer(date);
+			return _orderRepository.GetAllOrdersInSpecialDate(date);
 		}
 	}
 }

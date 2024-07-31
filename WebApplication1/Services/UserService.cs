@@ -4,22 +4,34 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using MySqlConnector;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Text;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.FluentValidation;
 using WebApplication1.Data.Models;
+using WebApplication1.Repositories;
 
 namespace WebApplication1.Services
 {
 	public class UserService : IUserService
 	{
-		private readonly IRepository<User> _userRepository;
+		private readonly ICRUDRepository<User> _userRepository;
 		private readonly TokenService _tokenService;
-        public UserService(IRepository<User> userRepository, TokenService tokenService)
+		private readonly IConfiguration _config;
+		private readonly IHttpContextAccessor _contextAccessor;
+		private readonly IOrderQueryRepository _orderQueryRepository;
+		public UserService(ICRUDRepository<User> userRepository, TokenService tokenService, IConfiguration configuration,IHttpContextAccessor contextAccessor, IOrderQueryRepository orderQueryRepository)
         {
             _userRepository = userRepository;
 			_tokenService = tokenService;
+			_config = configuration;
+			_contextAccessor = contextAccessor;
+			_orderQueryRepository = orderQueryRepository;
         }
 		private string GenerateSalt()
 		{
@@ -95,6 +107,60 @@ namespace WebApplication1.Services
 			if (passwordHash != user.PasswordHash)
 				throw new Exception("Password is incorrect.");
 			return _tokenService.GenerateToken(user);
+		}
+		private ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+		{
+
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var validationParameters = new TokenValidationParameters
+			{
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config.GetSection("JwtSettings").GetValue<string>("SecretKey"))), // Provide your signing key
+				ValidateIssuer = false, // Set to true if you want to validate the issuer
+				ValidateAudience = false // Set to true if you want to validate the audience
+			};
+
+			try
+			{
+				// Validate token, and then extract claims
+				ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+				return principal;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return null;
+			}
+		}
+
+		public async Task<User> GetCurrentUser()
+		{
+			var context = _contextAccessor.HttpContext;
+			var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+			string token = authHeader?.Split(' ').Last();
+			if (token != null)
+			{
+				ClaimsPrincipal claims = GetClaimsPrincipalFromToken(token);
+				IEnumerable<User> users = await GetAllUsersAsync();
+				if (claims == null)
+					throw new Exception("Unauthorized");
+				else
+				{
+					var userName = claims.FindFirst(ClaimTypes.Name)?.Value;
+					User user = users.FirstOrDefault(u => u.UserName == userName);
+					return user;
+				}
+			}
+			else
+				throw new Exception("empty token exception");
+
+		}
+
+		public async Task<ICollection<Order>> GetCurrentUserOrders()
+		{
+			User user = await GetCurrentUser();
+			ICollection<Order> orders =  _orderQueryRepository.GetOrdersByUserId(user.Id);
+			return orders;
 		}
 	}
 }

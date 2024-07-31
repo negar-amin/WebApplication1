@@ -12,5 +12,7 @@ namespace WebApplication1.Services
 		Task UpdateUserAsync(User user);
 		Task<bool> AddDefaultValueToRole();
 		Task<string> Login(string userName, string password);
+		Task<User> GetCurrentUser();
+		Task<ICollection<Order>> GetCurrentUserOrders();
 	}
 }

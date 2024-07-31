@@ -1,4 +1,5 @@
-﻿using WebApplication1.Data.DTO;
+﻿using HotChocolate.Authorization;
+using WebApplication1.Data.DTO;
 using WebApplication1.Data.Models;
 using WebApplication1.Repositories;
 using WebApplication1.Services;
@@ -16,6 +17,7 @@ namespace WebApplication1.GraphQL.Query
 		{
 			return await orderService.GetOrderByIdAsync(id);
 		}
+		[AllowAnonymous]
 		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(string date, [Service] IOrderCustomerService orderCustomerService)
 		{
 			DateTime d = Convert.ToDateTime(date);

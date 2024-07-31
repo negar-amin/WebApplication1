@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class Repository<T> : IRepository<T> where T : class
+public class CRUDRepository<T> : ICRUDRepository<T> where T : class
 {
 	private readonly ApplicationDbContext _context;
 	private readonly DbSet<T> _dbSet;
 
-	public Repository(ApplicationDbContext context)
+	public CRUDRepository(ApplicationDbContext context)
 	{
 		_context = context;
 		_dbSet = _context.Set<T>();

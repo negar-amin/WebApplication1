@@ -20,11 +20,12 @@ namespace WebApplication1.GraphQL.Mutation
 			var user = await UserService.AddUserAsync(input);
 			return user;
 		}
-		public async Task<User> UpdateUser(int id, UpdateUserDTO input, [Service] IUserService UserService)
+		[Authorize(Roles = new[] { nameof(Role.admin), nameof(Role.staff), nameof(Role.customer) })]
+		public async Task<User> UpdateUser(UpdateUserDTO input, [Service] IUserService UserService)
 		{
-			User user = await UserService.GetUserByIdAsync(id);
+			User user = await UserService.GetCurrentUser();
 
-			if(user == null)
+			if (user == null)
 			{
 				throw new Exception("User not found");
 			}
@@ -32,11 +33,13 @@ namespace WebApplication1.GraphQL.Mutation
 			await UserService.UpdateUserAsync(user);
 			return user;
 		}
+		[Authorize(Roles = new[] { nameof(Role.admin)})]
 		public async Task<bool> DeleteUser(int id, [Service] IUserService UserService)
 		{
 			await UserService.DeleteUserAsync(id);
 			return true;
 		}
+		[Authorize(Roles =new[]{nameof(Role.admin)})]
 		public async Task<bool> AddDefaultValueToRole([Service] IUserService userService)
 		{
 			return await userService.AddDefaultValueToRole();

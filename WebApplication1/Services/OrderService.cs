@@ -7,11 +7,11 @@ namespace WebApplication1.Services
 {
 	public class OrderService : IOrderService
 	{
-		IRepository<Order> _ordersRepository;
+		ICRUDRepository<Order> _ordersRepository;
 		IProductService _productService;
 		IUserService _userService;
 		IProductOrderService _productOrderService;
-		public OrderService(IRepository<Order> ordersRepository, IProductService productService, IUserService userService, IProductOrderService productOrderService)
+		public OrderService(ICRUDRepository<Order> ordersRepository, IProductService productService, IUserService userService, IProductOrderService productOrderService)
         {
             _ordersRepository = ordersRepository;
 			_productService = productService;

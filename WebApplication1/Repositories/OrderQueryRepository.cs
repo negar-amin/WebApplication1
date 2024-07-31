@@ -1,8 +1,11 @@
 ﻿
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Models;
+
 
 namespace WebApplication1.Repositories
 {
@@ -13,7 +16,7 @@ namespace WebApplication1.Repositories
         {
             _context = context;
         }
-        public List<CustomerOrderDetailDTO> GetOrderWithCustomer(DateTime date)
+        public List<CustomerOrderDetailDTO> GetAllOrdersInSpecialDate(DateTime date)
 		{
 			var query = from order in _context.Orders
 						join customer in _context.Users
@@ -40,6 +43,21 @@ namespace WebApplication1.Repositories
 				parsedResult.Add(row);
 			}
 			return parsedResult;
+		}
+
+		public ICollection<Order> GetOrdersByUserId(int userId)
+		{
+			User user = _context.Users.Include(o=>o.Orders).FirstOrDefault(o => o.Id == userId);
+			ICollection<Order> orders = new List<Order>();
+            foreach (var order in user.Orders)
+            {
+                Order newOrder = _context.Orders.Include(o=>o.Products).FirstOrDefault(o=>o.Id == order.Id);
+				orders.Add(newOrder);
+            }
+            if (user != null)
+				return orders;
+			else
+				throw new Exception("user not found");
 		}
 	}
 }

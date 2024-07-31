@@ -4,9 +4,9 @@ using WebApplication1.Data.Models;
 
 public class ProductService : IProductService
 {
-	private readonly IRepository<Product> _productRepository;
+	private readonly ICRUDRepository<Product> _productRepository;
 
-	public ProductService(IRepository<Product> productRepository)
+	public ProductService(ICRUDRepository<Product> productRepository)
 	{
 		_productRepository = productRepository;
 	}
