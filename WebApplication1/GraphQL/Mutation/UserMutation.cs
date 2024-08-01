@@ -14,7 +14,7 @@ namespace WebApplication1.GraphQL.Mutation
 	[Authorize]
 	public class UserMutation
 	{
-		string admin = Role.customer.GetDisplayName();
+		[AllowAnonymous]
 		public async Task<User> AddUser(AddUserDTO input, [Service] IUserService UserService)
 		{
 			var user = await UserService.AddUserAsync(input);

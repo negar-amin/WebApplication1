@@ -9,11 +9,14 @@ using Microsoft.IdentityModel.Tokens;
 using MySqlConnector;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Claims;
 using System.Text;
 using WebApplication1.Data.DTO;
+using WebApplication1.Data.Enums;
 using WebApplication1.Data.FluentValidation;
 using WebApplication1.Data.Models;
+using WebApplication1.GraphQL.Subscription;
 using WebApplication1.Repositories;
 
 namespace WebApplication1.Services
@@ -161,6 +164,13 @@ namespace WebApplication1.Services
 			User user = await GetCurrentUser();
 			ICollection<Order> orders =  _orderQueryRepository.GetOrdersByUserId(user.Id);
 			return orders;
+		}
+
+		public async Task<IEnumerable<User>> GetUsersWithRoles(Role role)
+		{
+			var users = await GetAllUsersAsync();
+			var usersWithDesiredRole = users.Where(user => user.Role == role);
+			return usersWithDesiredRole;
 		}
 	}
 }

@@ -14,6 +14,7 @@ namespace WebApplication1.Data.Models
         public string FirstName { set; get; }
         public string LastName { set; get; }
         public ICollection<Order> Orders { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
 
     }
 }

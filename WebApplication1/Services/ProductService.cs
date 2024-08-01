@@ -42,6 +42,10 @@ public class ProductService : IProductService
 		{
 			throw new Exception("product doesn't exist");
 		}
+		if (count <= 0)
+		{
+			throw new Exception("product count must be greater than zero");
+		}
 		else
 		{
 			product.StockQuantity = product.StockQuantity + count;

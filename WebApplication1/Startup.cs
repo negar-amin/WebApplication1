@@ -19,6 +19,9 @@ using System.Text;
 using System.Security.Claims;
 using WebApplication1.Data.Enums;
 using Microsoft.OpenApi.Extensions;
+using WebApplication1.GraphQL.Subscription;
+using HotChocolate.AspNetCore.Playground;
+using HotChocolate.AspNetCore;
 
 public class Startup
 {
@@ -71,6 +74,9 @@ public class Startup
 		services.AddScoped(typeof(IJoinTableRepository<>), typeof(JoinTableRepository<>));
 		services.AddScoped<IProductOrderService, ProductOrderService>();
 		services.AddSingleton<TokenService>(ts => new TokenService(Configuration.GetSection("JwtSettings").GetValue<string>("SecretKey")));
+		services.AddScoped<INotificationCRUD, NotificationCRUDService>();
+		services.AddScoped<INotificationService, NotificationService>();
+		services.AddScoped<ICreateAddToStockNotification, CreateAddToStockNotification>();
 		services
 			.AddGraphQLServer()
 			.AddAuthorization()
@@ -82,6 +88,9 @@ public class Startup
 				.AddTypeExtension<ProductMutation>()
 				.AddTypeExtension<UserMutation>()
 				.AddTypeExtension<OrderMutation>()
+			.AddSubscriptionType(d=> d.Name("Subscription"))
+				.AddTypeExtension<ProductNotification>()
+			.AddInMemorySubscriptions()
 			.AddProjections();
 	}
 
@@ -95,11 +104,12 @@ public class Startup
 		app.UseRouting();
 		app.UseAuthentication();
 		app.UseAuthorization();
-
+		app.UseWebSockets();
 		app.UseEndpoints(endpoints =>
 		{
 			// Map GraphQL endpoint
 			endpoints.MapGraphQL();
 		});
+		app.UseGraphQLPlayground();
 	}
 }

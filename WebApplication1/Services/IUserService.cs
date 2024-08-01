@@ -1,4 +1,5 @@
 ﻿using WebApplication1.Data.DTO;
+using WebApplication1.Data.Enums;
 using WebApplication1.Data.Models;
 
 namespace WebApplication1.Services
@@ -14,5 +15,6 @@ namespace WebApplication1.Services
 		Task<string> Login(string userName, string password);
 		Task<User> GetCurrentUser();
 		Task<ICollection<Order>> GetCurrentUserOrders();
+		Task<IEnumerable<User>> GetUsersWithRoles(Role role);
 	}
 }

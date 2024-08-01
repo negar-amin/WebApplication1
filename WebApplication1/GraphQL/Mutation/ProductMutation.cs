@@ -1,6 +1,8 @@
 ﻿using Mapster;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Models;
+using WebApplication1.GraphQL.Subscription;
+using WebApplication1.Services;
 
 namespace WebApplication1.GraphQL.Mutation
 {
@@ -24,10 +26,18 @@ namespace WebApplication1.GraphQL.Mutation
 			await ProductService.UpdateProductAsync(product);
 			return product;
 		}
-		public async Task<bool> AddToStock(int productId, int productCount, [Service] IProductService productService)
+		public async Task<bool> AddToStock(int productId, int productCount, [Service] INotificationCRUD notificationCRUD, [Service] ICreateAddToStockNotification createAddToStockNotification, [Service] INotificationService notificationService, [Service] IProductService productService, [Service] IUserService userService)
 		{
 			Product product = await productService.GetProductByIdAsync(productId);
-			return await productService.AddToStock(product, productCount);	
+			var result = await productService.AddToStock(product, productCount);
+			var notifications = await createAddToStockNotification.CreateNotification(product.Name, productCount);
+			foreach (var notification in notifications)
+			{
+				await notificationCRUD.AddNotificationAsync(notification);
+				await notificationService.SendNotification(nameof(ProductNotification.AddedToStock), notification);
+			}
+			return result;
+
 		}
 		public async Task<bool> DeleteProduct(int id, [Service] IProductService ProductService)
 		{
