@@ -10,7 +10,7 @@ using WebApplication1.Data.Enums;
 
 namespace WebApplication1.GraphQL.Mutation
 {
-	[ExtendObjectType(Name = "Mutation")]
+	[ExtendObjectType(typeof(Mutation))]
 	[Authorize]
 	public class UserMutation
 	{

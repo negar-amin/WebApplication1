@@ -5,7 +5,7 @@ using WebApplication1.Services;
 
 namespace WebApplication1.GraphQL.Mutation
 {
-	[ExtendObjectType(Name = "Mutation")]
+	[ExtendObjectType(typeof(Mutation))]
 	public class OrderMutation
 	{
 		public async Task<Order> AddOrder(int userId, List<AddOrderRequestDTO> productsInfo,[Service] IOrderService OrderService)

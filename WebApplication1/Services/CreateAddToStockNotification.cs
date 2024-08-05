@@ -13,7 +13,7 @@ namespace WebApplication1.Services
         public async Task<IEnumerable<Notification>> CreateNotification(string productName, int productCount)
 		{
 
-			var users =  _userService.GetUsersWithRoles(Role.admin).Result;
+			var users = await _userService.GetUsersWithRoles(Role.admin);
 			var notifications = new List<Notification>();
 			foreach (var user in users)
 			{

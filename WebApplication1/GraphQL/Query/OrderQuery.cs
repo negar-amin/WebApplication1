@@ -6,7 +6,7 @@ using WebApplication1.Services;
 
 namespace WebApplication1.GraphQL.Query
 {
-	[ExtendObjectType(Name = "Query")]
+	[ExtendObjectType(typeof(Query))]
 	public class OrderQuery
 	{
 		public async Task<IEnumerable<Order>> GetAllOrders([Service]IOrderService orderService)

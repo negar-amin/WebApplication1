@@ -12,7 +12,6 @@ using WebApplication1.GraphQL.Mutation;
 using WebApplication1.Data.Models;
 using WebApplication1.GraphQL.Query;
 using WebApplication1.Repositories;
-using WebApplication1.Data.DTO.Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -22,6 +21,7 @@ using Microsoft.OpenApi.Extensions;
 using WebApplication1.GraphQL.Subscription;
 using HotChocolate.AspNetCore.Playground;
 using HotChocolate.AspNetCore;
+using WebApplication1.Data.Mapster;
 
 public class Startup
 {
@@ -80,15 +80,15 @@ public class Startup
 		services
 			.AddGraphQLServer()
 			.AddAuthorization()
-			.AddQueryType(d => d.Name("Query"))
+			.AddQueryType<WebApplication1.GraphQL.Query.Query>()
+				.AddTypeExtension<OrderQuery>()
 				.AddTypeExtension<ProductQuery>()
 				.AddTypeExtension<UserQuery>()
-				.AddTypeExtension<OrderQuery>()
-			.AddMutationType(d => d.Name("Mutation"))
+			.AddMutationType<Mutation>()
 				.AddTypeExtension<ProductMutation>()
 				.AddTypeExtension<UserMutation>()
 				.AddTypeExtension<OrderMutation>()
-			.AddSubscriptionType(d=> d.Name("Subscription"))
+			.AddSubscriptionType<Subscription>()
 				.AddTypeExtension<ProductNotification>()
 			.AddInMemorySubscriptions()
 			.AddProjections();

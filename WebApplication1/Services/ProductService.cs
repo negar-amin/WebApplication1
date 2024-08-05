@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Mapster;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication1.Data.DTO;
 using WebApplication1.Data.Models;
 
 public class ProductService : IProductService
@@ -21,13 +23,20 @@ public class ProductService : IProductService
 		return await _productRepository.GetByIdAsync(id);
 	}
 
-	public async Task AddProductAsync(Product product)
+	public async Task AddProductAsync(AddProductDTO input)
 	{
+		Product product = input.Adapt<Product>();
 		await _productRepository.AddAsync(product);
 	}
 
-	public async Task UpdateProductAsync(Product product)
+	public async Task UpdateProductAsync(int id, UpdateProductDTO input)
 	{
+		Product product =await GetProductByIdAsync(id);
+		if (product == null)
+		{
+			throw new Exception("Product not found");
+		}
+		input.Adapt(product);
 		await _productRepository.UpdateAsync(product);
 	}
 
@@ -36,8 +45,9 @@ public class ProductService : IProductService
 		await _productRepository.DeleteAsync(id);
 	}
 
-	public async Task<bool> AddToStock(Product product, int count)
+	public async Task<bool> AddToStock(int productId, int count)
 	{
+		Product product = await GetProductByIdAsync(productId);
 		if (product == null)
 		{
 			throw new Exception("product doesn't exist");
@@ -49,7 +59,7 @@ public class ProductService : IProductService
 		else
 		{
 			product.StockQuantity = product.StockQuantity + count;
-			await UpdateProductAsync(product);
+			await UpdateProductAsync(product.Id , product.Adapt<UpdateProductDTO>());
 		}
 		return true;
 	}

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace WebApplication1.GraphQL.Query
 {
 	
-	[ExtendObjectType(Name = "Query")]
+	[ExtendObjectType(typeof(Query))]
 	[Authorize(Roles = new[] {nameof(Role.admin),nameof(Role.staff)})]
 	public class UserQuery
 	{
