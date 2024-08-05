@@ -2,11 +2,12 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using WebApplication1.Data.DTO;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
+using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.Services
 {
-	public class OrderService : IOrderService
+    public class OrderService : IOrderService
 	{
 		ICRUDRepository<Order> _ordersRepository;
 		IProductService _productService;
@@ -88,7 +89,7 @@ namespace WebApplication1.Services
 			{
 				OrderProduct orderProduct = await _productOrderService.GetProductOrderAsync(addedOrder.Id, item.ProductId);
 				orderProduct.ProductCount = item.ProductCount;
-				_productOrderService.UpdateProductOrder(orderProduct);
+				await _productOrderService.UpdateProductOrder(orderProduct);
 			}
 		}
 

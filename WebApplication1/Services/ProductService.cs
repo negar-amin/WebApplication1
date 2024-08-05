@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication1.Data.DTO;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 public class ProductService : IProductService
 {
@@ -45,7 +45,7 @@ public class ProductService : IProductService
 		await _productRepository.DeleteAsync(id);
 	}
 
-	public async Task<bool> AddToStock(int productId, int count)
+	public async Task<Product> AddToStock(int productId, int count)
 	{
 		Product product = await GetProductByIdAsync(productId);
 		if (product == null)
@@ -61,6 +61,6 @@ public class ProductService : IProductService
 			product.StockQuantity = product.StockQuantity + count;
 			await UpdateProductAsync(product.Id , product.Adapt<UpdateProductDTO>());
 		}
-		return true;
+		return product;
 	}
 }

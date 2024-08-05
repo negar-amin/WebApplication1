@@ -1,16 +1,16 @@
 ﻿using HotChocolate.Authorization;
-using WebApplication1.Data.Models;
-using WebApplication1.Services;
+using WebApplication1.Data.Entities;
 using WebApplication1.Data.Enums;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.GraphQL.Query
 {
-	
-	[ExtendObjectType(typeof(Query))]
+
+    [ExtendObjectType(typeof(Query))]
 	[Authorize(Roles = new[] {nameof(Role.admin),nameof(Role.staff)})]
-	public class UserQuery
+	public class UserQueries
 	{
 		[AllowAnonymous]
 		public async Task<ICollection<Order>> GetCurrentUserOrders([Service] IUserService userService)

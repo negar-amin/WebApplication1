@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using System.Reflection;
 using WebApplication1.Data.DTO;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 namespace WebApplication1.Data.Mapster
 {

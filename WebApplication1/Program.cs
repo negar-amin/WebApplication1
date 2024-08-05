@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 public class Program
 {

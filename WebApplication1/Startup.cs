@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using WebApplication1.Services;
 using WebApplication1.GraphQL.Mutation;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 using WebApplication1.GraphQL.Query;
 using WebApplication1.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,6 +22,8 @@ using WebApplication1.GraphQL.Subscription;
 using HotChocolate.AspNetCore.Playground;
 using HotChocolate.AspNetCore;
 using WebApplication1.Data.Mapster;
+using WebApplication1.Repositories.Contracts;
+using WebApplication1.Services.Contracts;
 
 public class Startup
 {
@@ -74,20 +76,18 @@ public class Startup
 		services.AddScoped(typeof(IJoinTableRepository<>), typeof(JoinTableRepository<>));
 		services.AddScoped<IProductOrderService, ProductOrderService>();
 		services.AddSingleton<TokenService>(ts => new TokenService(Configuration.GetSection("JwtSettings").GetValue<string>("SecretKey")));
-		services.AddScoped<INotificationCRUD, NotificationCRUDService>();
 		services.AddScoped<INotificationService, NotificationService>();
-		services.AddScoped<ICreateAddToStockNotification, CreateAddToStockNotification>();
 		services
 			.AddGraphQLServer()
 			.AddAuthorization()
 			.AddQueryType<WebApplication1.GraphQL.Query.Query>()
-				.AddTypeExtension<OrderQuery>()
-				.AddTypeExtension<ProductQuery>()
-				.AddTypeExtension<UserQuery>()
+				.AddTypeExtension<OrderQueries>()
+				.AddTypeExtension<ProductQueries>()
+				.AddTypeExtension<UserQueries>()
 			.AddMutationType<Mutation>()
-				.AddTypeExtension<ProductMutation>()
-				.AddTypeExtension<UserMutation>()
-				.AddTypeExtension<OrderMutation>()
+				.AddTypeExtension<ProductMutations>()
+				.AddTypeExtension<UserMutations>()
+				.AddTypeExtension<OrderMutations>()
 			.AddSubscriptionType<Subscription>()
 				.AddTypeExtension<ProductNotification>()
 			.AddInMemorySubscriptions()

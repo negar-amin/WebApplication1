@@ -15,13 +15,14 @@ using System.Text;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Enums;
 using WebApplication1.Data.FluentValidation;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 using WebApplication1.GraphQL.Subscription;
-using WebApplication1.Repositories;
+using WebApplication1.Repositories.Contracts;
+using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.Services
 {
-	public class UserService : IUserService
+    public class UserService : IUserService
 	{
 		private readonly ICRUDRepository<User> _userRepository;
 		private readonly TokenService _tokenService;
@@ -85,9 +86,17 @@ namespace WebApplication1.Services
 			return await _userRepository.GetByIdAsync(id);
 		}
 
-		public async Task UpdateUserAsync(User user)
+		public async Task<User> UpdateUserAsync(UpdateUserDTO input)
 		{
+			User user = await GetCurrentUser();
+
+			if (user == null)
+			{
+				throw new Exception("User not found");
+			}
+			input.Adapt(user);
 			await _userRepository.UpdateAsync(user);
+			return user;
 		}
 		public async Task<bool> AddDefaultValueToRole()
 		{

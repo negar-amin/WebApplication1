@@ -1,4 +1,4 @@
-﻿using WebApplication1.Data.Models;
+﻿using WebApplication1.Data.Entities;
 using HotChocolate.Authorization;
 using WebApplication1.Data.Enums;
 

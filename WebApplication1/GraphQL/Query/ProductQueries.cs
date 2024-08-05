@@ -1,9 +1,9 @@
 ﻿using WebApplication1.Data.DTO;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 namespace WebApplication1.GraphQL.Query {
 	[ExtendObjectType(typeof(Query))]
-	public class ProductQuery
+	public class ProductQueries
 	{
 		public Task<IEnumerable<Product>> GetProducts([Service] IProductService ProductService)
 		{

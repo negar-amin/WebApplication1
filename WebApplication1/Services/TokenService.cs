@@ -2,7 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 namespace WebApplication1.Services
 {
@@ -22,7 +22,7 @@ namespace WebApplication1.Services
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name,user.UserName),new Claim(ClaimTypes.Role,user.Role.ToString()) }),
-				Expires = DateTime.UtcNow.AddHours(1),
+				Expires = DateTime.UtcNow.AddHours(12),
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 			};
 			var token = tokenHandler.CreateToken(tokenDescriptor);

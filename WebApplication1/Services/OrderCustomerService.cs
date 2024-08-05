@@ -2,11 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using WebApplication1.Data.DTO;
-using WebApplication1.Repositories;
+using WebApplication1.Repositories.Contracts;
+using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.Services
 {
-	public class OrderCustomerService : IOrderCustomerService
+    public class OrderCustomerService : IOrderCustomerService
 	{
 		IOrderQueryRepository _orderRepository;
         public OrderCustomerService(IOrderQueryRepository orderQueryRepository)

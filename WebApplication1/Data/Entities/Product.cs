@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace WebApplication1.Data.Models
+namespace WebApplication1.Data.Entities
 {
 	public class Product
 	{

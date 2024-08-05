@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 namespace WebApplication1.Data.FluentValidation
 {

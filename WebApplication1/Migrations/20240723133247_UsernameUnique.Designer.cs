@@ -24,7 +24,7 @@ namespace WebApplication1.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Order", (string)null);
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.OrderProduct", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.OrderProduct", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -63,7 +63,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("OrderProduct");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Product", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Product", (string)null);
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.User", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,9 +129,9 @@ namespace WebApplication1.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Order", b =>
                 {
-                    b.HasOne("WebApplication1.Data.Models.User", "User")
+                    b.HasOne("WebApplication1.Data.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -140,15 +140,15 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.OrderProduct", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.OrderProduct", b =>
                 {
-                    b.HasOne("WebApplication1.Data.Models.Order", "Order")
+                    b.HasOne("WebApplication1.Data.Entities.Order", "Order")
                         .WithMany("OrderProducts")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Data.Models.Product", "Product")
+                    b.HasOne("WebApplication1.Data.Entities.Product", "Product")
                         .WithMany("ProductOrders")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -159,17 +159,17 @@ namespace WebApplication1.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Order", b =>
                 {
                     b.Navigation("OrderProducts");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Product", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Product", b =>
                 {
                     b.Navigation("ProductOrders");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.User", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.User", b =>
                 {
                     b.Navigation("Orders");
                 });

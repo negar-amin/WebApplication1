@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using WebApplication1.Data.DTO;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
+using WebApplication1.Repositories.Contracts;
 
 
 namespace WebApplication1.Repositories
 {
-	public class OrderQueryRepository : IOrderQueryRepository
+    public class OrderQueryRepository : IOrderQueryRepository
 	{
 		ApplicationDbContext _context;
         public OrderQueryRepository(ApplicationDbContext context)

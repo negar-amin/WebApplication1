@@ -1,9 +1,10 @@
-﻿using WebApplication1.Data.Models;
-using WebApplication1.Repositories;
+﻿using WebApplication1.Data.Entities;
+using WebApplication1.Repositories.Contracts;
+using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.Services
 {
-	public class ProductOrderService : IProductOrderService
+    public class ProductOrderService : IProductOrderService
 	{
 		private readonly IJoinTableRepository<OrderProduct> _joinTableRepository;
         public ProductOrderService(IJoinTableRepository<OrderProduct> joinTableRepository)

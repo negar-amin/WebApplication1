@@ -1,9 +1,10 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Repositories.Contracts;
 
 namespace WebApplication1.Repositories
 {
-	public class JoinTableRepository <T>: IJoinTableRepository<T> where T : class
+    public class JoinTableRepository <T>: IJoinTableRepository<T> where T : class
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly DbSet<T> _dbSet;

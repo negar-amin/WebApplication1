@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using WebApplication1.Data.Configurations;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 
 public class ApplicationDbContext : DbContext
 {

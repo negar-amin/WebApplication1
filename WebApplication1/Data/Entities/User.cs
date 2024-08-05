@@ -1,6 +1,6 @@
 ﻿using WebApplication1.Data.Enums;
 
-namespace WebApplication1.Data.Models
+namespace WebApplication1.Data.Entities
 {
     public class User
     {

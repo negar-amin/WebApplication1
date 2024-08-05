@@ -24,7 +24,7 @@ namespace WebApplication1.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Product", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +78,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.User", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -102,9 +102,9 @@ namespace WebApplication1.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Order", b =>
                 {
-                    b.HasOne("WebApplication1.Data.Models.User", "User")
+                    b.HasOne("WebApplication1.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -113,14 +113,14 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Product", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Product", b =>
                 {
-                    b.HasOne("WebApplication1.Data.Models.Order", null)
+                    b.HasOne("WebApplication1.Data.Entities.Order", null)
                         .WithMany("Products")
                         .HasForeignKey("OrderId");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Data.Entities.Order", b =>
                 {
                     b.Navigation("Products");
                 });

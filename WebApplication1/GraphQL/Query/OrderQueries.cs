@@ -1,13 +1,13 @@
 ﻿using HotChocolate.Authorization;
 using WebApplication1.Data.DTO;
-using WebApplication1.Data.Models;
+using WebApplication1.Data.Entities;
 using WebApplication1.Repositories;
-using WebApplication1.Services;
+using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.GraphQL.Query
 {
-	[ExtendObjectType(typeof(Query))]
-	public class OrderQuery
+    [ExtendObjectType(typeof(Query))]
+	public class OrderQueries
 	{
 		public async Task<IEnumerable<Order>> GetAllOrders([Service]IOrderService orderService)
 		{
