@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 public class CRUDRepository<T> : ICRUDRepository<T> where T : class
 {
-	private readonly ApplicationDbContext _context;
+	protected readonly ApplicationDbContext _context;
 	private readonly DbSet<T> _dbSet;
 
 	public CRUDRepository(ApplicationDbContext context)
@@ -45,5 +45,10 @@ public class CRUDRepository<T> : ICRUDRepository<T> where T : class
 			_dbSet.Remove(entity);
 			await _context.SaveChangesAsync();
 		}
+	}
+
+	public async Task<T> GetByIdAsync(int pk1, int pk2)
+	{
+		return await _dbSet.FindAsync(pk1, pk2); ;
 	}
 }

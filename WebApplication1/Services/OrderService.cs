@@ -3,17 +3,19 @@ using Mapster;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Entities;
+using WebApplication1.Repositories;
+using WebApplication1.Repositories.Contracts;
 using WebApplication1.Services.Contracts;
 
 namespace WebApplication1.Services
 {
-    public class OrderService : IOrderService
+	public class OrderService : IOrderService
 	{
-		ICRUDRepository<Order> _ordersRepository;
+		IOrderRepository _ordersRepository;
 		IProductService _productService;
 		IUserService _userService;
 		IProductOrderService _productOrderService;
-		public OrderService(ICRUDRepository<Order> ordersRepository, IProductService productService, IUserService userService, IProductOrderService productOrderService)
+		public OrderService(IOrderRepository ordersRepository, IProductService productService, IUserService userService, IProductOrderService productOrderService)
         {
             _ordersRepository = ordersRepository;
 			_productService = productService;
@@ -93,6 +95,9 @@ namespace WebApplication1.Services
 			}
 		}
 
-
+		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date)
+		{
+			return _ordersRepository.GetAllOrdersInSpecialDate(date);
+		}
 	}
 }

@@ -37,7 +37,7 @@ namespace WebApplication1.Repositories
 			{
 				var row = new CustomerOrderDetailDTO
 				{
-					ProductCollection = item.Products,
+					//ProductCollection = (List<Product>)item.Products,
 					PurchaseTime = item.PurchaseTime,
 					BuyerName = $"{item.FirstName} {item.LastName}"
 				};

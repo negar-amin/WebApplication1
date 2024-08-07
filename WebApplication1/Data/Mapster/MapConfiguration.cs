@@ -37,6 +37,11 @@ namespace WebApplication1.Data.Mapster
                     UpdateMappingNotNullChecker(src, dest);
                 }
                 );
+            TypeAdapterConfig<Order, CustomerOrderDetailDTO>
+                .NewConfig()
+                .Map(dest => dest.BuyerName, src => $"{src.User.FirstName} {src.User.LastName}")
+                //.Map(dest => dest.Products, src => src.Products.ToList())
+                ;
         }
     }
 }

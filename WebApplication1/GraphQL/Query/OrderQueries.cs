@@ -18,10 +18,14 @@ namespace WebApplication1.GraphQL.Query
 			return await orderService.GetOrderByIdAsync(id);
 		}
 		[AllowAnonymous]
-		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(string date, [Service] IOrderCustomerService orderCustomerService)
+		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(string date, [Service] IOrderService orderService)
 		{
 			DateTime d = Convert.ToDateTime(date);
-			return orderCustomerService.GetCustomerOrdersByDate(d);
+			return  orderService.GetCustomerOrdersByDate(d);
+		}
+		public async Task<List<OrderProduct>> GetAllProductOrders([Service] IProductOrderService productOrderService)
+		{
+			return (List<OrderProduct>)await productOrderService.GetAllProductOrdersAsync();
 		}
 	}
 }

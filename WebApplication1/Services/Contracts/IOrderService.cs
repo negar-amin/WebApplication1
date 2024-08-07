@@ -10,6 +10,7 @@ namespace WebApplication1.Services.Contracts
         Task UpdateOrderAsync(Order order);
         Task DeleteOrderAsync(int id);
         Task<Order> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo);
+		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date);
 
-    }
+	}
 }

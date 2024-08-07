@@ -73,7 +73,7 @@ public class Startup
 		services.AddScoped<IProductService, ProductService>();
 		services.AddScoped<IUserService, UserService>();
 		services.AddScoped<IOrderService, OrderService>();
-		services.AddScoped(typeof(IJoinTableRepository<>), typeof(JoinTableRepository<>));
+		services.AddScoped<IOrderRepository, OrderRepository>();
 		services.AddScoped<IProductOrderService, ProductOrderService>();
 		services.AddSingleton<TokenService>(ts => new TokenService(Configuration.GetSection("JwtSettings").GetValue<string>("SecretKey")));
 		services.AddScoped<INotificationService, NotificationService>();
