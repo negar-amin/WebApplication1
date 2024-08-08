@@ -28,14 +28,14 @@ namespace WebApplication1.Services
 		private readonly TokenService _tokenService;
 		private readonly IConfiguration _config;
 		private readonly IHttpContextAccessor _contextAccessor;
-		private readonly IOrderQueryRepository _orderQueryRepository;
-		public UserService(ICRUDRepository<User> userRepository, TokenService tokenService, IConfiguration configuration,IHttpContextAccessor contextAccessor, IOrderQueryRepository orderQueryRepository)
+		private readonly IOrderRepository _orderRepository;
+		public UserService(IOrderRepository orderRepository ,ICRUDRepository<User> userRepository, TokenService tokenService, IConfiguration configuration,IHttpContextAccessor contextAccessor)
         {
             _userRepository = userRepository;
 			_tokenService = tokenService;
 			_config = configuration;
 			_contextAccessor = contextAccessor;
-			_orderQueryRepository = orderQueryRepository;
+			_orderRepository = orderRepository;
         }
 		private string GenerateSalt()
 		{
@@ -171,7 +171,7 @@ namespace WebApplication1.Services
 		public async Task<ICollection<Order>> GetCurrentUserOrders()
 		{
 			User user = await GetCurrentUser();
-			ICollection<Order> orders =  _orderQueryRepository.GetOrdersByUserId(user.Id);
+			ICollection<Order> orders =  _orderRepository.GetOrdersByUserId(user.Id);
 			return orders;
 		}
 

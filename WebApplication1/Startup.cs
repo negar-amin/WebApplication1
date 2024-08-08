@@ -68,8 +68,6 @@ public class Startup
 			options.UseMySql(Configuration.GetConnectionString("MySQL"), new MySqlServerVersion(new Version(8, 0, 23))));
 		services.AddHttpContextAccessor();
 		services.AddScoped(typeof(ICRUDRepository<>), typeof(CRUDRepository<>));
-		services.AddScoped<IOrderCustomerService, OrderCustomerService>();
-		services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
 		services.AddScoped<IProductService, ProductService>();
 		services.AddScoped<IUserService, UserService>();
 		services.AddScoped<IOrderService, OrderService>();

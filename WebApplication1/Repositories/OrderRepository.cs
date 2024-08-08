@@ -28,5 +28,25 @@ namespace WebApplication1.Repositories
 			}
 			return  output;
 		}
+
+		public ICollection<Order> GetOrdersByUserId(int userId)
+		{
+			User user = _context.Users.Include(o => o.Orders).FirstOrDefault(o => o.Id == userId);
+			if (user != null)
+			{
+
+				ICollection<Order> orders = new List<Order>();
+				foreach (var order in user.Orders)
+				{
+					Order newOrder = _context.Orders.Include(o => o.Products).FirstOrDefault(o => o.Id == order.Id);
+					orders.Add(newOrder);
+				}
+				return orders;
+			}
+			else
+			{
+				throw new Exception("user not found");
+			}
+		}
 	}
 }

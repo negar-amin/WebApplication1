@@ -6,5 +6,6 @@ namespace WebApplication1.Repositories.Contracts
 	public interface IOrderRepository:ICRUDRepository<Order>
 	{
 		List<CustomerOrderDetailDTO> GetAllOrdersInSpecialDate(DateTime date);
+		ICollection<Order> GetOrdersByUserId(int userId);
 	}
 }
