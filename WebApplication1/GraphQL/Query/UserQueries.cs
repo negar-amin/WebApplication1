@@ -4,6 +4,7 @@ using WebApplication1.Data.Enums;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WebApplication1.Services.Contracts;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
 
 namespace WebApplication1.GraphQL.Query
 {
@@ -13,7 +14,7 @@ namespace WebApplication1.GraphQL.Query
 	public class UserQueries
 	{
 		[AllowAnonymous]
-		public async Task<ICollection<Order>> GetCurrentUserOrders([Service] IUserService userService)
+		public async Task<Response<List<Order>>> GetCurrentUserOrders([Service] IUserService userService)
 		{
 			return await userService.GetCurrentUserOrders();
 		}

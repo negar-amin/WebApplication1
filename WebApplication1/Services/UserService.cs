@@ -19,6 +19,8 @@ using WebApplication1.Data.Entities;
 using WebApplication1.GraphQL.Subscription;
 using WebApplication1.Repositories.Contracts;
 using WebApplication1.Services.Contracts;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
+using System;
 
 namespace WebApplication1.Services
 {
@@ -46,11 +48,20 @@ namespace WebApplication1.Services
 		{
 			return Convert.ToBase64String(Encoding.UTF8.GetBytes(password + salt));
 		}
-		public async Task<User> AddUserAsync(AddUserDTO userInput)
+		public async Task<Response<User>> AddUserAsync(AddUserDTO userInput)
 		{
 			var validator = new AddUserInputValidator();
-			validator.ValidateAndThrow(userInput);
-			var salt = GenerateSalt();
+			Response<User> response = new Response<User>();
+			var validationResult = validator.Validate(userInput);
+            foreach (var validationError in validationResult.Errors)
+            {
+				var fields = validationError.ErrorMessage.Split(":").ToList();
+				ResponseError error = new ResponseError(int.Parse(fields[0]), fields[1]) with { Detail = fields[2] };
+				response.Errors.Add(error);
+
+            }
+			if (response.Errors.Count > 0) return response;
+            var salt = GenerateSalt();
 			var passwordHash = HashPassword(userInput.Password,salt);
 			User user = new User{
 				PasswordHash = passwordHash,
@@ -65,10 +76,10 @@ namespace WebApplication1.Services
 			{
 				if (ex.InnerException is MySqlException mySqlException && mySqlException.Number == 1062)
 				{
-					throw new Exception("UserName already exists.");
+					response.Errors.Add(ResponseError.DuplicateUniqueProperty with { Detail="UserName already exist"});
 				}
 			}
-			return user;
+			return response;
 		}
 
 		public async Task DeleteUserAsync(int id)
@@ -86,17 +97,14 @@ namespace WebApplication1.Services
 			return await _userRepository.GetByIdAsync(id);
 		}
 
-		public async Task<User> UpdateUserAsync(UpdateUserDTO input)
+		public async Task<Response<User>> UpdateUserAsync(UpdateUserDTO input)
 		{
+			Response<User> response = new Response<User>();
 			User user = await GetCurrentUser();
-
-			if (user == null)
-			{
-				throw new Exception("User not found");
-			}
 			input.Adapt(user);
 			await _userRepository.UpdateAsync(user);
-			return user;
+			response.Data = user;
+			return response;
 		}
 		public async Task<bool> AddDefaultValueToRole()
 		{
@@ -168,11 +176,11 @@ namespace WebApplication1.Services
 
 		}
 
-		public async Task<ICollection<Order>> GetCurrentUserOrders()
+		public async Task<Response<List<Order>>> GetCurrentUserOrders()
 		{
 			User user = await GetCurrentUser();
-			ICollection<Order> orders =  _orderRepository.GetOrdersByUserId(user.Id);
-			return orders;
+			var response =  _orderRepository.GetOrdersByUserId(user.Id);
+			return response;
 		}
 
 		public async Task<IEnumerable<User>> GetUsersWithRoles(Role role)

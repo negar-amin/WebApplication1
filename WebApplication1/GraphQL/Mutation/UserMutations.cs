@@ -7,6 +7,7 @@ using WebApplication1.Data.Enums;
 using Microsoft.OpenApi.Extensions;
 using WebApplication1.Data.Enums;
 using WebApplication1.Services.Contracts;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
 
 namespace WebApplication1.GraphQL.Mutation
 {
@@ -15,16 +16,16 @@ namespace WebApplication1.GraphQL.Mutation
 	public class UserMutations
 	{
 		[AllowAnonymous]
-		public async Task<User> AddUser(AddUserDTO input, [Service] IUserService UserService)
+		public async Task<Response<User>> AddUser(AddUserDTO input, [Service] IUserService UserService)
 		{
-			var user = await UserService.AddUserAsync(input);
-			return user;
+			var response = await UserService.AddUserAsync(input);
+			return response;
 		}
 		[Authorize(Roles = new[] { nameof(Role.admin), nameof(Role.staff), nameof(Role.customer) })]
-		public async Task<User> UpdateUser(UpdateUserDTO input, [Service] IUserService UserService)
+		public async Task<Response<User>> UpdateUser(UpdateUserDTO input, [Service] IUserService UserService)
 		{
-			var user = await UserService.UpdateUserAsync(input);
-			return user;
+			var response = await UserService.UpdateUserAsync(input);
+			return response;
 		}
 		[Authorize(Roles = new[] { nameof(Role.admin)})]
 		public async Task<bool> DeleteUser(int id, [Service] IUserService UserService)
