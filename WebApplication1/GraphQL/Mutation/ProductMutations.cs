@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Entities;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
 using WebApplication1.GraphQL.Subscription;
 using WebApplication1.Services.Contracts;
 
@@ -14,15 +15,15 @@ namespace WebApplication1.GraphQL.Mutation
 			await ProductService.AddProductAsync(input);
 			return true;
 		}
-		public async Task<bool> UpdateProduct(int id, UpdateProductDTO input, [Service] IProductService ProductService)
+		public async Task<Response<Product>> UpdateProduct(int id, UpdateProductDTO input, [Service] IProductService ProductService)
 		{
-			await ProductService.UpdateProductAsync(id,  input);
-			return true;
+			var response = await ProductService.UpdateProductAsync(id,  input);
+			return response;
 		}
-		public async Task<Product> AddToStock(int productId, int productCount, [Service] INotificationService notificationService, [Service] IProductService productService)
+		public async Task<Response<Product>> AddToStock(int productId, int productCount, [Service] INotificationService notificationService, [Service] IProductService productService)
 		{
 			var result = await productService.AddToStock(productId, productCount);
-			List<Notification> notifications = (List<Notification>)await notificationService.CreateAddToStockNotification(result.Name,productCount);
+			List<Notification> notifications = (List<Notification>)await notificationService.CreateAddToStockNotification(result.Data?.Name,productCount);
 			await notificationService.SendNotification(nameof(Subscription.ProductNotification.AddedToStock),notifications);
 			return result;
 

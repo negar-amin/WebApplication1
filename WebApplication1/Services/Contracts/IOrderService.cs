@@ -1,5 +1,6 @@
 ﻿using WebApplication1.Data.DTO;
 using WebApplication1.Data.Entities;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
 
 namespace WebApplication1.Services.Contracts
 {
@@ -9,7 +10,7 @@ namespace WebApplication1.Services.Contracts
         Task<Order> GetOrderByIdAsync(int id);
         Task UpdateOrderAsync(Order order);
         Task DeleteOrderAsync(int id);
-        Task<Order> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo);
+        Task<Response<Order>> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo);
 		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date);
 
 	}

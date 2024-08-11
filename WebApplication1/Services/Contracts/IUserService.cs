@@ -13,8 +13,8 @@ namespace WebApplication1.Services.Contracts
         Task DeleteUserAsync(int id);
         Task<Response<User>> UpdateUserAsync(UpdateUserDTO input);
         Task<bool> AddDefaultValueToRole();
-        Task<string> Login(string userName, string password);
-        Task<User> GetCurrentUser();
+		Task<Response<string>> Login(string userName, string password);
+        Task<Response<User>> GetCurrentUser();
 		Task<Response<List<Order>>> GetCurrentUserOrders();
         Task<IEnumerable<User>> GetUsersWithRoles(Role role);
     }

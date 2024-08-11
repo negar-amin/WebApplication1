@@ -3,6 +3,7 @@ using Mapster;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Entities;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
 using WebApplication1.Repositories;
 using WebApplication1.Repositories.Contracts;
 using WebApplication1.Services.Contracts;
@@ -22,14 +23,17 @@ namespace WebApplication1.Services
 			_userService = userService;
 			_productOrderService = productOrderService;
         }
-        public async Task<Order> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo)
+        public async Task<Response<Order>> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo)
 		{
+			Response<Order> response = new Response<Order>();
 			var user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				throw new Exception("user doesn't exist");
+				response.Status.Add(ResponseError.NotFound with { Detail="user not found"});
+				return response;
 			}
-			var products = await OrderIsPossible(productsInfo);
+			var products = await OrderIsPossible(productsInfo, response);
+			if (response.Status.Count > 0) return response;
 			UpdateOrderProductsStockQuantity(productsInfo);
             Order order = new Order
 			{
@@ -39,7 +43,8 @@ namespace WebApplication1.Services
 			};
 			var result = await _ordersRepository.AddAsync(order);
 			AddProductCountOfOrderProductsToOrderProductTable(result, productsInfo);
-            return order;
+			response.Data = order;
+			return response;
 		}
 
 		public async Task DeleteOrderAsync(int id)
@@ -61,15 +66,15 @@ namespace WebApplication1.Services
 		{
 			await _ordersRepository.UpdateAsync(order);
 		}
-		private async Task<ICollection<Product>> OrderIsPossible(List<AddOrderRequestDTO> productsInfo)
+		private async Task<ICollection<Product>> OrderIsPossible(List<AddOrderRequestDTO> productsInfo, Response<Order> response)
 		{
 			ICollection<Product> products = new List<Product>();
 			foreach (var productInfo in productsInfo)
 			{
 				var product = await _productService.GetProductByIdAsync(productInfo.ProductId);
-				if (productInfo.ProductCount < 1) throw new Exception("product count must be greater than 0");
-				if (product == null) throw new Exception($"product with id {productInfo.ProductId} doesn't exist");
-				if (product.StockQuantity < productInfo.ProductCount) throw new Exception($"stockQuantity wasn't enough.{product.StockQuantity} of {product.Name} is available at store");
+				if (productInfo?.ProductCount < 1) response.Status.Add(ResponseError.NegativeCount with { Detail="product count can't be negative"});
+				if (product == null) response.Status.Add(ResponseError.NotFound with { Detail= $"product with id {productInfo.ProductId} doesn't exist" });
+				if (product?.StockQuantity < productInfo.ProductCount) response.Status.Add(ResponseError.InadiquateStock with { Detail= $"only {product.StockQuantity} of {product.Name} is available at store" });
 				products.Add(product);
 			}
 			return products;

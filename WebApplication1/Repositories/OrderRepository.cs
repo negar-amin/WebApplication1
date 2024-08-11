@@ -34,7 +34,7 @@ namespace WebApplication1.Repositories
 		{
 			Response<List<Order>> response = new Response<List<Order>>();
 			User user = _context.Users.Include(o => o.Orders).FirstOrDefault(o => o.Id == userId);
-			if (user == null) response.Errors.Add(ResponseError.NotFound);
+			if (user == null) response.Status.Add(ResponseError.NotFound);
 			List<Order> orders = new List<Order>();
 			foreach (var order in user?.Orders ?? Enumerable.Empty<Order>())
 			{

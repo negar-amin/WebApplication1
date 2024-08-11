@@ -29,15 +29,15 @@ namespace WebApplication1.GraphQL.Query
 			return user;
 		}
 		[AllowAnonymous]
-		public async Task<string> UserLogin(string userName, string Password, [Service]IUserService userService)
+		public async Task<Response<string>> UserLogin(string userName, string Password, [Service]IUserService userService)
 		{
 			return await userService.Login(userName, Password);
 		}
 		[AllowAnonymous]
-		public async Task<User> GetCurrentUser([Service]IUserService userService)
+		public async Task<Response<User>> GetCurrentUser([Service]IUserService userService)
 		{
-			User user = await userService.GetCurrentUser();
-			return user;
+			var response = await userService.GetCurrentUser();
+			return response;
 		}
 	}
 }

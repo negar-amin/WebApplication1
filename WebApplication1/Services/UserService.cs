@@ -57,10 +57,10 @@ namespace WebApplication1.Services
             {
 				var fields = validationError.ErrorMessage.Split(":").ToList();
 				ResponseError error = new ResponseError(int.Parse(fields[0]), fields[1]) with { Detail = fields[2] };
-				response.Errors.Add(error);
+				response.Status.Add(error);
 
             }
-			if (response.Errors.Count > 0) return response;
+			if (response.Status.Count > 0) return response;
             var salt = GenerateSalt();
 			var passwordHash = HashPassword(userInput.Password,salt);
 			User user = new User{
@@ -76,7 +76,7 @@ namespace WebApplication1.Services
 			{
 				if (ex.InnerException is MySqlException mySqlException && mySqlException.Number == 1062)
 				{
-					response.Errors.Add(ResponseError.DuplicateUniqueProperty with { Detail="UserName already exist"});
+					response.Status.Add(ResponseError.DuplicateUniqueProperty with { Detail="UserName already exist"});
 				}
 			}
 			return response;
@@ -100,10 +100,10 @@ namespace WebApplication1.Services
 		public async Task<Response<User>> UpdateUserAsync(UpdateUserDTO input)
 		{
 			Response<User> response = new Response<User>();
-			User user = await GetCurrentUser();
-			input.Adapt(user);
-			await _userRepository.UpdateAsync(user);
-			response.Data = user;
+			var user = await GetCurrentUser();
+			input.Adapt(user.Data);
+			await _userRepository.UpdateAsync(user.Data);
+			response.Data = user.Data;
 			return response;
 		}
 		public async Task<bool> AddDefaultValueToRole()
@@ -117,16 +117,21 @@ namespace WebApplication1.Services
 			return true;
         }
 
-		public async Task<string> Login(string userName, string password)
+		public async Task<Response<string>> Login(string userName, string password)
 		{
+			Response<string> response = new Response<string>();
 			var users = await _userRepository.GetAllAsync();
 			var user = users.FirstOrDefault(user => user.UserName == userName);
 			if (user == null)
-				throw new Exception($"{userName} is not registered.");
-			var passwordHash = HashPassword(password, user.PasswordSalt);
-			if (passwordHash != user.PasswordHash)
-				throw new Exception("Password is incorrect.");
-			return _tokenService.GenerateToken(user);
+				response.Status.Add(ResponseError.NotFound with { Detail = $"no user with username {userName} was not found" });
+			else
+			{
+				var passwordHash = HashPassword(password, user.PasswordSalt);
+				if (passwordHash != user.PasswordHash)
+					response.Status.Add(ResponseError.IncorrectPassword with { Detail = "password is incorrect" });
+				if (response.Status.Count == 0) response.Data = _tokenService.GenerateToken(user);
+			}
+			return response;
 		}
 		private ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
 		{
@@ -153,33 +158,43 @@ namespace WebApplication1.Services
 			}
 		}
 
-		public async Task<User> GetCurrentUser()
+		public async Task<Response<User>> GetCurrentUser()
 		{
+			Response<User> response = new Response<User>();
 			var context = _contextAccessor.HttpContext;
 			var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
 			string token = authHeader?.Split(' ').Last();
 			if (token != null)
 			{
-				ClaimsPrincipal claims = GetClaimsPrincipalFromToken(token);
-				IEnumerable<User> users = await GetAllUsersAsync();
-				if (claims == null)
-					throw new Exception("Unauthorized");
-				else
+				try
 				{
-					var userName = claims.FindFirst(ClaimTypes.Name)?.Value;
-					User user = users.FirstOrDefault(u => u.UserName == userName);
-					return user;
+					ClaimsPrincipal claims = GetClaimsPrincipalFromToken(token);
+					IEnumerable<User> users = await GetAllUsersAsync();
+					if (claims == null)
+						response.Status.Add(ResponseError.Unauthorized with { Detail="no claims found"});
+					else
+					{
+						var userName = claims.FindFirst(ClaimTypes.Name)?.Value;
+						User user = users.FirstOrDefault(u => u.UserName == userName);
+						response.Data = user;
+					}
 				}
+				catch (Exception ex)
+				{
+					response.Status.Add(ResponseError.Unauthorized);
+				}
+				
 			}
 			else
-				throw new Exception("empty token exception");
+				response.Status.Add(ResponseError.EmptyToken);
+			return response;
 
 		}
 
 		public async Task<Response<List<Order>>> GetCurrentUserOrders()
 		{
-			User user = await GetCurrentUser();
-			var response =  _orderRepository.GetOrdersByUserId(user.Id);
+			var user = await GetCurrentUser();
+			var response =  _orderRepository.GetOrdersByUserId(user.Data.Id);
 			return response;
 		}
 

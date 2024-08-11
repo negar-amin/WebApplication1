@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Entities;
+using WebApplication1.GraphQL.GraphQLResponseSchema;
 
 public class ProductService : IProductService
 {
@@ -29,15 +30,19 @@ public class ProductService : IProductService
 		await _productRepository.AddAsync(product);
 	}
 
-	public async Task UpdateProductAsync(int id, UpdateProductDTO input)
+	public async Task<Response<Product>> UpdateProductAsync(int id, UpdateProductDTO input)
 	{
+		Response<Product> response = new Response<Product>();
 		Product product =await GetProductByIdAsync(id);
 		if (product == null)
 		{
-			throw new Exception("Product not found");
+			response.Status.Add(ResponseError.NotFound with { Detail = $"Product with id {id} doesn't exist" });
+			return response;
 		}
 		input.Adapt(product);
 		await _productRepository.UpdateAsync(product);
+		response.Data = product;
+		return response;
 	}
 
 	public async Task DeleteProductAsync(int id)
@@ -45,22 +50,18 @@ public class ProductService : IProductService
 		await _productRepository.DeleteAsync(id);
 	}
 
-	public async Task<Product> AddToStock(int productId, int count)
+	public async Task<Response<Product>> AddToStock(int productId, int count)
 	{
+		Response<Product> response = new Response<Product>();
 		Product product = await GetProductByIdAsync(productId);
-		if (product == null)
-		{
-			throw new Exception("product doesn't exist");
-		}
-		if (count <= 0)
-		{
-			throw new Exception("product count must be greater than zero");
-		}
-		else
+		if (product == null) response.Status.Add(ResponseError.NotFound with { Detail = $"Product with id {productId} doesn't exist"});
+		if (count <= 0) response.Status.Add(ResponseError.NegativeCount);
+		if(response.Status.Count==0)
 		{
 			product.StockQuantity = product.StockQuantity + count;
-			await UpdateProductAsync(product.Id , product.Adapt<UpdateProductDTO>());
+			await UpdateProductAsync(product.Id, product.Adapt<UpdateProductDTO>());
+			response.Data = product;
 		}
-		return product;
+		return response;
 	}
 }
