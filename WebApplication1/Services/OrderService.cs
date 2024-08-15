@@ -1,6 +1,7 @@
 ﻿using GreenDonut;
 using Mapster;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Transactions;
 using WebApplication1.Data.DTO;
 using WebApplication1.Data.Entities;
 using WebApplication1.GraphQL.GraphQLResponseSchema;
@@ -16,34 +17,52 @@ namespace WebApplication1.Services
 		IProductService _productService;
 		IUserService _userService;
 		IProductOrderService _productOrderService;
-		public OrderService(IOrderRepository ordersRepository, IProductService productService, IUserService userService, IProductOrderService productOrderService)
-        {
-            _ordersRepository = ordersRepository;
+		ApplicationDbContext _dbContext;
+		public OrderService(ApplicationDbContext dbContext,IOrderRepository ordersRepository, IProductService productService, IUserService userService, IProductOrderService productOrderService)
+		{
+			_ordersRepository = ordersRepository;
 			_productService = productService;
 			_userService = userService;
 			_productOrderService = productOrderService;
-        }
-        public async Task<Response<Order>> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo)
+			_dbContext = dbContext;
+		}
+		public async Task<Response<Order>> AddOrderAsync(int userId, List<AddOrderRequestDTO> productsInfo)
 		{
 			Response<Order> response = new Response<Order>();
 			var user = await _userService.GetUserByIdAsync(userId);
 			if (user == null)
 			{
-				response.Status.Add(ResponseError.NotFound with { Detail="user not found"});
+				response.Status.Add(ResponseError.NotFound with { Detail = "user not found" });
 				return response;
 			}
 			var products = await OrderIsPossible(productsInfo, response);
 			if (response.Status.Count > 0) return response;
-			UpdateOrderProductsStockQuantity(productsInfo);
-            Order order = new Order
+			using (var transaction = await _dbContext.Database.BeginTransactionAsync())
 			{
-				User = user,
-				Products = products,
-				PurchaseTime = DateTime.Now
-			};
-			var result = await _ordersRepository.AddAsync(order);
-			AddProductCountOfOrderProductsToOrderProductTable(result, productsInfo);
-			response.Data = order;
+				try
+				{
+
+					await UpdateOrderProductsStockQuantity(productsInfo);
+					Order order = new Order
+					{
+						User = user,
+						Products = products,
+						PurchaseTime = DateTime.Now
+					};
+					var result = await _ordersRepository.AddAsync(order);
+					await AddProductCountOfOrderProductsToOrderProductTable(result, productsInfo);
+					await transaction.CommitAsync();
+					response.Data = order;
+
+				}
+				catch (Exception ex)
+				{
+					response.Status.Add(ResponseError.Success with { Detail= ex.Message });
+					transaction.Rollback();
+				}
+
+			}
+
 			return response;
 		}
 
@@ -66,31 +85,35 @@ namespace WebApplication1.Services
 		{
 			await _ordersRepository.UpdateAsync(order);
 		}
+		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date)
+		{
+			return _ordersRepository.GetAllOrdersInSpecialDate(date);
+		}
 		private async Task<ICollection<Product>> OrderIsPossible(List<AddOrderRequestDTO> productsInfo, Response<Order> response)
 		{
 			ICollection<Product> products = new List<Product>();
 			foreach (var productInfo in productsInfo)
 			{
 				var product = await _productService.GetProductByIdAsync(productInfo.ProductId);
-				if (productInfo?.ProductCount < 1) response.Status.Add(ResponseError.NegativeCount with { Detail="product count can't be negative"});
-				if (product == null) response.Status.Add(ResponseError.NotFound with { Detail= $"product with id {productInfo.ProductId} doesn't exist" });
-				if (product?.StockQuantity < productInfo.ProductCount) response.Status.Add(ResponseError.InadiquateStock with { Detail= $"only {product.StockQuantity} of {product.Name} is available at store" });
+				if (productInfo?.ProductCount < 1) response.Status.Add(ResponseError.NegativeCount with { Detail = "product count can't be negative" });
+				if (product == null) response.Status.Add(ResponseError.NotFound with { Detail = $"product with id {productInfo.ProductId} doesn't exist" });
+				if (product?.StockQuantity < productInfo.ProductCount) response.Status.Add(ResponseError.InadiquateStock with { Detail = $"only {product.StockQuantity} of {product.Name} is available at store" });
 				products.Add(product);
 			}
 			return products;
 		}
 
-		private async void UpdateOrderProductsStockQuantity(List<AddOrderRequestDTO> productsInfo)
+		private async Task UpdateOrderProductsStockQuantity(List<AddOrderRequestDTO> productsInfo)
 		{
 			foreach (var productInfo in productsInfo)
 			{
 				var product = await _productService.GetProductByIdAsync(productInfo.ProductId);
 				product.StockQuantity = product.StockQuantity - productInfo.ProductCount;
-				await _productService.UpdateProductAsync(product.Id,product.Adapt<UpdateProductDTO>());
+				await _productService.UpdateProductAsync(product.Id, product.Adapt<UpdateProductDTO>());
 			}
 		}
 
-		private async void AddProductCountOfOrderProductsToOrderProductTable(Order addedOrder, List<AddOrderRequestDTO> productsInfo)
+		private async Task AddProductCountOfOrderProductsToOrderProductTable(Order addedOrder, List<AddOrderRequestDTO> productsInfo)
 		{
 			foreach (var item in productsInfo)
 			{
@@ -98,11 +121,6 @@ namespace WebApplication1.Services
 				orderProduct.ProductCount = item.ProductCount;
 				await _productOrderService.UpdateProductOrder(orderProduct);
 			}
-		}
-
-		public List<CustomerOrderDetailDTO> GetCustomerOrdersByDate(DateTime date)
-		{
-			return _ordersRepository.GetAllOrdersInSpecialDate(date);
 		}
 	}
 }
